@@ -5,7 +5,7 @@ const connectToDb=require('./config/database');
 const User = require('./models/userSchema');
 const PORT=process.env.PORT;
 const app=express();
-app.use(express.json())
+app.use(express.json());
 
 
 
@@ -97,26 +97,40 @@ app.use('/update',async (req,res,next)=>{
 })
 
 
+
+
+
 app.put('/update', async (req,res)=>{
-    console.log(req.resp);
-    // console.log(req.resp.id);
-    const id=req.resp.id;
 
-    const {firstName}=req.body;
-    console.log(firstName)
+    const data=req.body;
+    // console.log(age);
+    // const data={age,about,password};
 
-    try{
-        await User.findByIdAndUpdate(id,{firstName:firstName});
-        res.send("Done successfully");
+    const allowedUpdates=["about","age","password"];
+    const isUpdateAllowed=Object.keys(data).every(i=>allowedUpdates.includes(i));
+    if(isUpdateAllowed){
+        const id=req.resp.id;
+            try{
+                await User.findByIdAndUpdate(id,{
+                    age:data.age,
+                    password:data.password,
+                    about:data.about
+                });
+                res.send("Done successfully");
+            }
+            catch(er){
+                console.error("Unable to update there was a problem");
+            }
+       
     }
-    catch(er){
-        console.error("Unable to update there was a problem");
+    else{
+         res.status(404).send("Update Not Allowed");
     }
+    
+
+});
 
 
-
-
-})
 
 
 

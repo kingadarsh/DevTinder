@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const validator = require('validator');
 
 const {Schema,model}= mongoose;
 
@@ -20,7 +21,12 @@ const userSchema=new Schema({
         required:true,
         unique:true,
         trim:true,
-        lowercase:true
+        lowercase:true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error ("the email is is not valid");
+            }
+        }
     },
     password:{
         type:String,
@@ -31,7 +37,16 @@ const userSchema=new Schema({
     },
     gender:{
         type:String,
-        enum:["Male","Female","Other"]
+        enum:["Male","Female","Other"],
+        validate(value){
+            if(!["Male","Female","Other"].includes(value)){
+                throw new Error("The gender is not a type")
+            }
+        }
+    },
+    about:{
+        type:String,
+        default:"This is something about user"
     }
 });
 
